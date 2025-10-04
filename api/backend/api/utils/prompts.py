@@ -45,6 +45,7 @@ Serve hot and enjoy!
 
 Each new recipe should be separated with "\n----------\n" (new line, 10 dashes and new line)
 In the dish name and products there should not be new lines.
+Try to generate popular dishes in first order.
 Dont use any text before and after all recipes. Dont write titles like "Dish name", "Dish recipe", only type the name itself without anything.
 The recipe should be detailed (everything should be by steps like in example). Try to make steps as detailed as possible. If it written about something that takes time write how much time it takes. If there are some concrete measurements in the step include them into the text. Every step should come with a new line (new line for a word step and number, then a new line with exact step and then a new line after all), exactly like its given in the example.
 For energy value provide only number (without any text like "kcal" or "g")

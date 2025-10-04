@@ -47,7 +47,7 @@ def get_photo(dish_name, products, recipe, download_path):
         model="gpt-image-1",
         prompt=prompt,
         size="1024x1024",
-        quality="low",
+        quality="medium",
         n=1
     )
 

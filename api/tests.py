@@ -1,22 +1,15 @@
 import os
 import json
-import uuid
-import time
 import requests
 from pathlib import Path
 
 BASE = "http://65.21.9.14:1212"
 DISHES_URL = f"{BASE}/api/get-dishes/"
 IMAGES_URL = f"{BASE}/api/images"
-
-TIMEOUT = 60
+TIMEOUT = 120
 
 
 def _post_dishes(image_path=None, preferences=None, products=None):
-    """
-    Send POST /api/get-dishes/ with optional image, preferences (dict), products (list).
-    Returns (status_code, json_dict or text).
-    """
     files = {}
     data = {}
 
@@ -39,43 +32,32 @@ def _post_dishes(image_path=None, preferences=None, products=None):
         return resp.status_code, resp.text
 
 
-def _attach_image_links(body):
-    """
-    Adds 'image_url' to every dish based on image_id (assumes .png filenames).
-    Mutates and returns body.
-    """
-    if not isinstance(body, dict):
-        return body
-
-    dishes = body.get("dishes") or []
-    for d in dishes:
-        image_id = d.get("image_id")
-        if image_id is None:
-            continue
-        image_id_str = str(image_id)
-        d["image_url"] = f"{IMAGES_URL}/{image_id_str}.png"
-    return body
-
-
-def _print_results(label, status, body):
+def _print_name_products_link(label, status, body):
     print(f"\n== {label} ==")
     print("HTTP:", status)
 
-    if isinstance(body, dict):
-        body = _attach_image_links(body)
-        print(json.dumps(body, ensure_ascii=False, indent=2))
-        links = [d.get("image_url") for d in body.get("dishes", []) if d.get("image_url")]
-        if links:
-            print("\nImage links:")
-            for url in links:
-                print(" -", url)
-    else:
+    if not isinstance(body, dict):
         print(body)
+        return
+
+    # Pretty lines: name - products - link
+    dishes = body.get("dishes") or []
+    if not dishes:
+        print("(no dishes)")
+        return
+
+    for d in dishes:
+        name = d.get("name", "")
+        products_list = d.get("products") or []
+        products_str = ", ".join(products_list)
+        image_id = d.get("image_id")
+        link = f"{IMAGES_URL}/{image_id}.png" if image_id else ""
+        print(f"{name} - {products_str} - {link}")
 
 
 def test_image_only():
     status, body = _post_dishes(image_path=r"A:\global-hackathon-v1\api\test.jpg")
-    _print_results("test_image_only", status, body)
+    _print_name_products_link("test_image_only", status, body)
     assert status == 200, f"Expected 200, got {status}"
     assert isinstance(body, dict) and body.get("status") == "ok", f"Bad body: {body}"
     assert (body.get("dishes") or []), "No dishes returned"
@@ -85,7 +67,7 @@ def test_products_only():
     status, body = _post_dishes(
         products=["Potatoes (500g)", "Onions (1)", "Garlic (2 cloves)", "Olive oil (2 tbsp)"]
     )
-    _print_results("test_products_only", status, body)
+    _print_name_products_link("test_products_only", status, body)
     assert status == 200, f"Expected 200, got {status}"
     assert isinstance(body, dict) and body.get("status") == "ok"
     assert (body.get("dishes") or [])
@@ -99,7 +81,7 @@ def test_with_preferences_and_image():
         "time": [10, 30]
     }
     status, body = _post_dishes(image_path=r"A:\global-hackathon-v1\api\test.jpg", preferences=prefs)
-    _print_results("test_with_preferences_and_image", status, body)
+    _print_name_products_link("test_with_preferences_and_image", status, body)
     assert status == 200, f"Expected 200, got {status}"
     assert isinstance(body, dict) and body.get("status") == "ok"
     assert (body.get("dishes") or [])
@@ -107,7 +89,7 @@ def test_with_preferences_and_image():
 
 def test_bad_request_no_image_no_products():
     status, body = _post_dishes()
-    _print_results("test_bad_request_no_image_no_products", status, body)
+    _print_name_products_link("test_bad_request_no_image_no_products", status, body)
     assert status == 400, f"Expected 400, got {status}"
     msg = body if isinstance(body, str) else body.get("error")
     assert "No image or products provided" in str(msg)
