@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, parser_classes
 import mimetypes
 from django.http import FileResponse
 from .utils.gpt import get_recipes, get_photo
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import uuid
 
 def parse_recipes(recipes_text: str):
@@ -86,12 +87,30 @@ def get_dishes(request):
     recipes = get_recipes(image, preferences, products)
     recipes = parse_recipes(recipes)
 
-    for recipe in recipes:
-        image_id = uuid.uuid4()
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        download_path = os.path.join(current_dir, 'images', f"{image_id}.png")
-        get_photo(recipe['name'], recipe['products'], recipe['recipe'], download_path)
-        recipe['image_id'] = image_id
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    images_dir = os.path.join(current_dir, 'images')
+    os.makedirs(images_dir, exist_ok=True)
+
+    futures = []
+    with ThreadPoolExecutor(max_workers=min(8, max(1, len(recipes)))) as executor:
+        for recipe in recipes:
+            image_id = str(uuid.uuid4())
+            download_path = os.path.join(images_dir, f"{image_id}.png")
+            recipe['image_id'] = image_id
+
+            futures.append(
+                executor.submit(
+                    get_photo,
+                    recipe['name'],
+                    recipe['products'],
+                    recipe['recipe'],
+                    download_path,
+                )
+            )
+
+        for fut in as_completed(futures):
+            _ = fut.result()
+
 
     return Response({"status": "ok", "dishes": recipes}, status=status.HTTP_200_OK)
     
