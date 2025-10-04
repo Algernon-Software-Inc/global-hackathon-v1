@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 import mimetypes
 from django.http import FileResponse
-from .utils.gpt import get_recipes_by_image, get_photo
+from .utils.gpt import get_recipes, get_photo
 import uuid
 
 def parse_recipes(recipes_text: str):
@@ -73,28 +73,27 @@ def parse_recipes(recipes_text: str):
 
     return results
     
-class DishesView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [AllowAny]
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+def get_dishes(request):
+    image = request.FILES.get("image")
+    preferences = request.data.get("preferences", "None")
+    products = request.data.get("products", [])
 
-    def post(self, request):
-        image = request.FILES.get("image")
-        preferences = request.data.get("preferences", "None")
+    if not image and not products:
+        return Response({"error": "No image or products provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not image:
-            return Response({"error": "No image provided."}, status=status.HTTP_400_BAD_REQUEST)
+    recipes = get_recipes(image, preferences, products)
+    recipes = parse_recipes(recipes)
 
-        recipes = get_recipes_by_image(image, preferences)
-        recipes = parse_recipes(recipes)
+    for recipe in recipes:
+        image_id = uuid.uuid4()
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        download_path = os.path.join(current_dir, 'images', f"{image_id}.png")
+        get_photo(recipe['name'], recipe['products'], recipe['recipe'], download_path)
+        recipe['image_id'] = image_id
 
-        for recipe in recipes:
-            image_id = uuid.uuid4()
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            download_path = os.path.join(current_dir, 'images', image_id)
-            get_photo(recipe['name'], recipe['products'], recipe['recipe'], download_path)
-            recipe['image_id'] = image_id
-
-        return Response({"status": "ok", "dishes": recipes}, status=status.HTTP_200_OK)
+    return Response({"status": "ok", "dishes": recipes}, status=status.HTTP_200_OK)
     
 @api_view(['GET'])
 def serve_image(request, filename):
