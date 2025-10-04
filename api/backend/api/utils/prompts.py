@@ -5,7 +5,7 @@ def recipes_prompt(preferences, products):
 
     return f"""Give me recipes of 3-4 pretty popular dishes i can make with these products{':'+', '.join(products) if products else ''} (AND salt, oil, water). Use only products I have, no other products. 
 Make sure you give exactly all products (if image is provided), check all text on packages (it can be in any language)
-Preferences: {preferences}. Use them strictly when generating dishes.
+Preferences: {preferences}. Use them strictly when generating dishes (if nothing is provided omit it).
 Every recipe should be in this format:
 Dish name
 List of products used and measurements in brackets (separated by coma, if measurements are not exact like 50g of tomatoes use the amount of the product, for example: Tomatoes (1 piece))

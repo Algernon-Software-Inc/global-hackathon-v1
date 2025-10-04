@@ -78,7 +78,7 @@ def test_with_preferences_and_image():
         "diets": ["vegetarian"],
         "experience": "beginner",
         "favourite": ["soup", "pasta"],
-        "time": [10, 30]
+        "time": ["10-15 minutes", "30-45 minutes"]
     }
     status, body = _post_dishes(image_path=r"A:\global-hackathon-v1\api\test.jpg", preferences=prefs)
     _print_name_products_link("test_with_preferences_and_image", status, body)
