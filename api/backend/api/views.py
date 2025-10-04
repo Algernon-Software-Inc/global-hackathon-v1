@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import mimetypes
 from django.http import FileResponse
-from utils.gpt import get_recipes_by_image, get_photo
+from .utils.gpt import get_recipes_by_image, get_photo
 import uuid
 
 def parse_recipes(recipes_text: str):

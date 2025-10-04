@@ -2,7 +2,6 @@ from openai import OpenAI
 import base64, mimetypes, os
 from prompts import recipes_prompt
 from dotenv import load_dotenv
-import requests
 
 load_dotenv()
 
