@@ -22,14 +22,14 @@ def file_to_data_url(source) -> str:
     b64 = base64.b64encode(data).decode("utf-8")
     return f"data:{mime};base64,{b64}"
 
-def get_recipes_by_image(path: str):
+def get_recipes_by_image(path: str, preferences):
     data_url = file_to_data_url(path)
     resp = client.responses.create(
         model="gpt-4.1-mini",
         input=[{
             "role": "user",
             "content": [
-                {"type": "input_text", "text": recipes_prompt()},
+                {"type": "input_text", "text": recipes_prompt(preferences)},
                 {"type": "input_image", "image_url": data_url}
             ]
         }]

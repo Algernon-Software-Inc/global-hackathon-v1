@@ -1,5 +1,10 @@
-def recipes_prompt():
+def recipes_prompt(preferences):
+    if not isinstance(preferences, str):
+        preferences = f"""Diets: {", ".join(preferences['diets'])}. Cooking experience: {preferences['experience']}. Favourite cuisines: {", ".join(preferences['favourite'])}. Meal preparation time: {", ".join(preferences['time'])}
+"""
+
     return f"""Give me recipes of 4 pretty popular dishes i can make with these products (AND salt, oil, water, butter). Use only products I have, no other products. 
+Preferences: {preferences}. Use them strictly when generating dishes.
 Every recipe should be in this format:
 Dish name
 List of products used and measurements in brackets (separated by coma, if measurements are not exact like 50g of tomatoes use the amount of the product, for example: Tomatoes (1 piece))

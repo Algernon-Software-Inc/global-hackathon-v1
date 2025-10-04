@@ -79,10 +79,12 @@ class DishesView(APIView):
 
     def post(self, request):
         image = request.FILES.get("image")
+        preferences = request.data.get("preferences", "None")
+
         if not image:
             return Response({"error": "No image provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-        recipes = get_recipes_by_image(image)
+        recipes = get_recipes_by_image(image, preferences)
         recipes = parse_recipes(recipes)
 
         for recipe in recipes:
@@ -90,7 +92,7 @@ class DishesView(APIView):
             current_dir = os.path.dirname(os.path.abspath(__file__))
             download_path = os.path.join(current_dir, 'images', image_id)
             get_photo(recipe['name'], recipe['products'], recipe['recipe'], download_path)
-            recipe['image'] = image_id
+            recipe['image_id'] = image_id
 
         return Response({"status": "ok", "dishes": recipes}, status=status.HTTP_200_OK)
     
