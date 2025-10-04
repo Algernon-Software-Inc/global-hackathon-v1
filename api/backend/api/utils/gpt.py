@@ -22,9 +22,9 @@ def file_to_data_url(source) -> str:
     return f"data:{mime};base64,{b64}"
 
 def get_recipes(img, preferences, products):
-    data_url = file_to_data_url(img)
     content = [{"type": "input_text", "text": recipes_prompt(preferences, products)}]
     if img:
+        data_url = file_to_data_url(img)
         content += {"type": "input_image", "image_url": data_url}
 
     resp = client.responses.create(
