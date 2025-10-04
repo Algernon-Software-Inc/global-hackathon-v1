@@ -25,7 +25,7 @@ def get_recipes(img, preferences, products):
     content = [{"type": "input_text", "text": recipes_prompt(preferences, products)}]
     if img:
         data_url = file_to_data_url(img)
-        content += {"type": "input_image", "image_url": data_url}
+        content.append({"type": "input_image", "image_url": data_url})
 
     resp = client.responses.create(
         model="gpt-4.1-mini",

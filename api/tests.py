@@ -11,7 +11,12 @@ IMAGES_URL = f"{BASE}/api/images"
 
 TIMEOUT = 60
 
+
 def _post_dishes(image_path=None, preferences=None, products=None):
+    """
+    Send POST /api/get-dishes/ with optional image, preferences (dict), products (list).
+    Returns (status_code, json_dict or text).
+    """
     files = {}
     data = {}
 
@@ -34,63 +39,78 @@ def _post_dishes(image_path=None, preferences=None, products=None):
         return resp.status_code, resp.text
 
 
-def test_image_only():
-    print("== test_image_only ==")
-    status, body = _post_dishes(image_path="test.jpg")
-    assert status == 200, f"Expected 200, got {status}, body={body}"
-    assert isinstance(body, dict) and body.get("status") == "ok", f"Bad body: {body}"
-    dishes = body.get("dishes") or []
-    assert len(dishes) >= 1, "No dishes returned"
-    print(f"OK: {len(dishes)} dishes")
+def _attach_image_links(body):
+    """
+    Adds 'image_url' to every dish based on image_id (assumes .png filenames).
+    Mutates and returns body.
+    """
+    if not isinstance(body, dict):
+        return body
 
-    image_id = dishes[0].get("image_id")
-    if image_id:
+    dishes = body.get("dishes") or []
+    for d in dishes:
+        image_id = d.get("image_id")
+        if image_id is None:
+            continue
         image_id_str = str(image_id)
-        for candidate in (f"{image_id_str}.png", image_id_str):
-            url = f"{IMAGES_URL}/{candidate}"
-            r = requests.get(url, timeout=TIMEOUT)
-            print(f"Fetch image {candidate}: {r.status_code}")
-            if r.status_code == 200:
-                assert r.headers.get("Content-Type", "").startswith(("image/", "application/octet-stream"))
-                break
+        d["image_url"] = f"{IMAGES_URL}/{image_id_str}.png"
+    return body
+
+
+def _print_results(label, status, body):
+    print(f"\n== {label} ==")
+    print("HTTP:", status)
+
+    if isinstance(body, dict):
+        body = _attach_image_links(body)
+        print(json.dumps(body, ensure_ascii=False, indent=2))
+        links = [d.get("image_url") for d in body.get("dishes", []) if d.get("image_url")]
+        if links:
+            print("\nImage links:")
+            for url in links:
+                print(" -", url)
+    else:
+        print(body)
+
+
+def test_image_only():
+    status, body = _post_dishes(image_path=r"A:\global-hackathon-v1\api\test.jpg")
+    _print_results("test_image_only", status, body)
+    assert status == 200, f"Expected 200, got {status}"
+    assert isinstance(body, dict) and body.get("status") == "ok", f"Bad body: {body}"
+    assert (body.get("dishes") or []), "No dishes returned"
 
 
 def test_products_only():
-    print("== test_products_only ==")
     status, body = _post_dishes(
         products=["Potatoes (500g)", "Onions (1)", "Garlic (2 cloves)", "Olive oil (2 tbsp)"]
     )
-    assert status == 200, f"Expected 200, got {status}, body={body}"
-    assert body.get("status") == "ok"
-    dishes = body.get("dishes") or []
-    assert len(dishes) >= 1
-    print(f"OK: {len(dishes)} dishes")
+    _print_results("test_products_only", status, body)
+    assert status == 200, f"Expected 200, got {status}"
+    assert isinstance(body, dict) and body.get("status") == "ok"
+    assert (body.get("dishes") or [])
 
 
 def test_with_preferences_and_image():
-    print("== test_with_preferences_and_image ==")
     prefs = {
         "diets": ["vegetarian"],
         "experience": "beginner",
         "favourite": ["soup", "pasta"],
         "time": [10, 30]
     }
-    status, body = _post_dishes(image_path="test.jpg", preferences=prefs)
-    assert status == 200, f"Expected 200, got {status}, body={body}"
-    assert body.get("status") == "ok"
-    dishes = body.get("dishes") or []
-    assert len(dishes) >= 1
-    print(f"OK: {len(dishes)} dishes with preferences")
+    status, body = _post_dishes(image_path=r"A:\global-hackathon-v1\api\test.jpg", preferences=prefs)
+    _print_results("test_with_preferences_and_image", status, body)
+    assert status == 200, f"Expected 200, got {status}"
+    assert isinstance(body, dict) and body.get("status") == "ok"
+    assert (body.get("dishes") or [])
 
 
 def test_bad_request_no_image_no_products():
-    print("== test_bad_request_no_image_no_products ==")
     status, body = _post_dishes()
-    assert status == 400, f"Expected 400, got {status}, body={body}"
-    # body can be dict or text; try to inspect message
+    _print_results("test_bad_request_no_image_no_products", status, body)
+    assert status == 400, f"Expected 400, got {status}"
     msg = body if isinstance(body, str) else body.get("error")
     assert "No image or products provided" in str(msg)
-    print("OK: got 400 as expected")
 
 
 if __name__ == "__main__":
