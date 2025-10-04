@@ -40,6 +40,7 @@ def get_photo(dish_name, products, recipe, download_path):
     prompt = (
         f"{dish_name} that was cooked with these products: {', '.join(products)}. "
         f"And cooked by this recipe:\n{recipe}\n\n"
+        f"It should look tasty, the dish is served in the plate, the photo should not be cut, make plate take 75% of space"
     )
 
     response = client.images.generate(

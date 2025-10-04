@@ -3,7 +3,7 @@ def recipes_prompt(preferences, products):
         preferences = f"""Diets: {", ".join(preferences['diets'])}. Cooking experience: {preferences['experience']}. Favourite cuisines: {", ".join(preferences['favourite'])}. Meal preparation time: {", ".join(preferences['time'])}
 """
 
-    return f"""Give me recipes of 4 pretty popular dishes i can make with these products{':'+', '.join(products) if products else ''} (AND salt, oil, water, butter). Use only products I have, no other products. 
+    return f"""Give me recipes of 4 pretty popular dishes i can make with these products{':'+', '.join(products) if products else ''} (AND salt, oil, water). Use only products I have, no other products. 
 Preferences: {preferences}. Use them strictly when generating dishes.
 Every recipe should be in this format:
 Dish name
