@@ -41,5 +41,6 @@ class DishesView(APIView):
             return Response({"error": "No image provided."}, status=status.HTTP_400_BAD_REQUEST)
 
         recipes = get_recipes_by_image(image)
+        recipes = parse_recipes(recipes)
 
         return Response({"status": "ok", "dishes": recipes}, status=status.HTTP_200_OK)
