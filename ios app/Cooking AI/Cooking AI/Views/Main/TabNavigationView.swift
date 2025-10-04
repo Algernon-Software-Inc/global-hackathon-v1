@@ -55,8 +55,8 @@ struct TabNavigationView: View {
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: -5)
             )
-            .padding(.horizontal, 30)
-            .padding(.bottom, 10)
+            .padding(.horizontal, 20)
+            .padding(.bottom, safeBottomInset() + 6)
         }
         .ignoresSafeArea(.keyboard)
     }
@@ -82,4 +82,10 @@ struct TabBarItem: View {
             .frame(maxWidth: .infinity)
         }
     }
+}
+
+private func safeBottomInset() -> CGFloat {
+    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let window = windowScene.windows.first else { return 0 }
+    return window.safeAreaInsets.bottom
 }

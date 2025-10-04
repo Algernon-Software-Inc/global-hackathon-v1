@@ -131,7 +131,11 @@ struct DishCardView: View {
         
         Task {
             do {
-                let image = try await APIService.shared.getImage(imageId: dish.image_id)
+                guard let imageId = dish.image_id else {
+                    await MainActor.run { isLoadingImage = false }
+                    return
+                }
+                let image = try await APIService.shared.getImage(imageId: imageId)
                 await MainActor.run {
                     dishImage = image
                     isLoadingImage = false

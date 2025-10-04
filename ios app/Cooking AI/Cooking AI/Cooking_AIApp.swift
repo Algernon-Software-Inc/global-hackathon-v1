@@ -18,6 +18,8 @@ struct Cooking_AIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(.light)
+                .environment(\.sizeCategory, .large)
         }
     }
 }
