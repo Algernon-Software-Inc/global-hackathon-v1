@@ -1,5 +1,5 @@
 def recipes_prompt():
-    return f"""Give me recipes of 4 pretty popular dishes i can make with these products. Use only products I have, no other products. 
+    return f"""Give me recipes of 4 pretty popular dishes i can make with these products (AND salt, oil, water, butter). Use only products I have, no other products. 
 Every recipe should be in this format:
 Dish name
 List of products used and measurements in brackets

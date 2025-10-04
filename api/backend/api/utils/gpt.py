@@ -7,10 +7,18 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def file_to_data_url(path: str) -> str:
-    mime = mimetypes.guess_type(path)[0] or "image/png"
-    with open(path, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode("utf-8")
+def file_to_data_url(source) -> str:
+    if isinstance(source, str):
+        if not os.path.exists(source):
+            raise FileNotFoundError(f"File not found: {source}")
+        mime = mimetypes.guess_type(source)[0] or "image/png"
+        with open(source, "rb") as f:
+            data = f.read()
+    else:
+        data = source.read()
+        mime = getattr(source, "content_type", None) or "image/png"
+
+    b64 = base64.b64encode(data).decode("utf-8")
     return f"data:{mime};base64,{b64}"
 
 def get_recipes_by_image(path: str):
