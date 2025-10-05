@@ -34,6 +34,7 @@ def get_recipes(img, preferences, products):
             "content": content
         }]
     )
+    print(resp.output_text)
     return resp.output_text
 
 def get_photo(dish_name, products, recipe, download_path):
