@@ -107,6 +107,14 @@ struct Dish: Codable, Identifiable {
     var existingProducts: [String] {
         return products.filter { products_exist.contains($0) }
     }
+    
+    // Display Kcal with random adjustment (+100 to +200)
+    var displayKcal: Double {
+        // Use the dish name as a seed to ensure consistent random value for the same dish
+        let seed = abs(name.hashValue)
+        let randomAdjustment = Double((seed % 101) + 100) // Generates 100-200
+        return energy_kcal + randomAdjustment
+    }
 
     // Encodable conformance (canonical keys)
     func encode(to encoder: Encoder) throws {
