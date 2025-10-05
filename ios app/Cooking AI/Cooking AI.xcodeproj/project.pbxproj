@@ -98,11 +98,11 @@
 		113FA05E2E91AAD10011ED60 /* Cooking AI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 113FA0832E91AAD60011ED60 /* Build configuration list for PBXNativeTarget "Cooking AI" */;
-            buildPhases = (
-                113FA05B2E91AAD10011ED60 /* Sources */,
-                113FA05C2E91AAD10011ED60 /* Frameworks */,
-                113FA05D2E91AAD10011ED60 /* Resources */,
-            );
+			buildPhases = (
+				113FA05B2E91AAD10011ED60 /* Sources */,
+				113FA05C2E91AAD10011ED60 /* Frameworks */,
+				113FA05D2E91AAD10011ED60 /* Resources */,
+			);
 			buildRules = (
 			);
 			dependencies = (
@@ -399,12 +399,12 @@
 				DEVELOPMENT_TEAM = 9L9F8D8698;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-                INFOPLIST_FILE = "Cooking AI/AppInfo.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_FILE = "Cooking AI/AppInfo.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -429,12 +429,12 @@
 				DEVELOPMENT_TEAM = 9L9F8D8698;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-                INFOPLIST_FILE = "Cooking AI/AppInfo.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_FILE = "Cooking AI/AppInfo.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

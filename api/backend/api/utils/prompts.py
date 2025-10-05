@@ -16,6 +16,7 @@ Dish energy value (in kcal)
 Dish proteins (in g)
 Dish fats (in g)
 Dish carbs (in g)
+List of products on the image and measurements in brackets (separated by coma, if measurements are not exact like 50g of tomatoes use the amount of the product, for example: Tomatoes (1 piece))
 
 Example:
 Burger
@@ -43,6 +44,7 @@ Serve hot and enjoy!
 15
 32
 18.5
+Bread (2 slices), Meat (100g), Cheese (1 slice), Tomatoes (1 piece)
 
 Each new recipe should be separated with "\n----------\n" (new line, 10 dashes and new line)
 In the dish name and products there should not be new lines.

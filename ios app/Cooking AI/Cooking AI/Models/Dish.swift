@@ -63,6 +63,33 @@ struct Dish: Codable, Identifiable {
     var difficultyStars: String {
         String(repeating: "⭐️", count: max(0, min(difficulty, 5)))
     }
+    
+    // For displaying difficulty as text
+    var difficultyText: String {
+        switch difficulty {
+        case 1:
+            return "Very Easy"
+        case 2:
+            return "Easy"
+        case 3:
+            return "Medium"
+        case 4:
+            return "Hard"
+        case 5:
+            return "Very Hard"
+        default:
+            return "Easy"
+        }
+    }
+    
+    // For displaying time with fallback
+    var timeText: String {
+        if time_min > 0 {
+            return "\(time_min) min"
+        } else {
+            return "30 min" // Default fallback
+        }
+    }
 
     // Encodable conformance (canonical keys)
     func encode(to encoder: Encoder) throws {

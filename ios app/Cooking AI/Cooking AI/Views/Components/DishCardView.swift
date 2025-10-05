@@ -12,117 +12,155 @@ struct DishCardView: View {
     @State private var isLoadingImage = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 0) {
             // Image and favourite button
             ZStack(alignment: .topTrailing) {
                 if let image = dishImage {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
-                        .frame(height: 200)
+                        .frame(height: 220)
                         .clipped()
-                        .cornerRadius(12)
                 } else if isLoadingImage {
                     ZStack {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(height: 200)
-                            .cornerRadius(12)
+                        LinearGradient(
+                            colors: [Color.gray.opacity(0.1), Color.gray.opacity(0.2)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .frame(height: 220)
                         
                         ProgressView()
+                            .tint(Color.theme.primary)
                     }
                 } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 200)
-                        .cornerRadius(12)
+                    LinearGradient(
+                        colors: [Color.gray.opacity(0.1), Color.gray.opacity(0.2)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .frame(height: 220)
+                    .overlay(
+                        Image(systemName: "photo")
+                            .font(.system(size: 40))
+                            .foregroundColor(Color.theme.textTertiary)
+                    )
                 }
                 
-                // Favourite button
-                Button(action: handleToggleFavourite) {
+                // Favourite button with backdrop
+                Button(action: handleToggleFavouriteWithHaptic) {
                     Image(systemName: favouritesManager.isFavourite(dish) ? "heart.fill" : "heart")
-                        .font(.system(size: 24))
-                        .foregroundColor(favouritesManager.isFavourite(dish) ? .red : .white)
-                        .padding(10)
-                        .background(Color.black.opacity(0.3))
+                        .font(.system(size: 22))
+                        .foregroundColor(favouritesManager.isFavourite(dish) ? Color.theme.favorite : .white)
+                        .padding(12)
+                        .background(.ultraThinMaterial)
                         .clipShape(Circle())
+                        .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                 }
-                .padding(10)
+                .padding(12)
+                .accessibilityLabel(favouritesManager.isFavourite(dish) ? "Remove from favourites" : "Add to favourites")
             }
             
-            // Dish name
-            Text(dish.name)
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
-            
-            // Time and difficulty
-            HStack(spacing: 20) {
-                HStack(spacing: 5) {
-                    Image(systemName: "clock")
-                        .foregroundColor(.gray)
-                    Text("\(dish.time_min) min")
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
+            VStack(alignment: .leading, spacing: 16) {
+                // Dish name
+                Text(dish.name)
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(Color.theme.primary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // Time and difficulty with enhanced styling
+                HStack(spacing: 12) {
+                    InfoPill(icon: "clock.fill", text: dish.timeText)
+                    InfoPill(icon: "chart.bar.fill", text: dish.difficultyText)
                 }
                 
-                HStack(spacing: 5) {
-                    Text(dish.difficultyStars)
-                        .font(.system(size: 14))
-                }
-            }
-            
-            // Nutrition info
-            HStack(spacing: 15) {
-                NutritionBadge(label: "kcal", value: String(format: "%.0f", dish.energy_kcal))
-                NutritionBadge(label: "Protein", value: String(format: "%.0fg", dish.proteins_g))
-                NutritionBadge(label: "Fat", value: String(format: "%.0fg", dish.fats_g))
-                NutritionBadge(label: "Carbs", value: String(format: "%.0fg", dish.carbs_g))
-            }
-            
-            Divider()
-            
-            // Ingredients
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Ingredients")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
-                
-                ForEach(dish.products, id: \.self) { product in
-                    HStack(spacing: 8) {
-                        Circle()
-                            .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
-                            .frame(width: 6, height: 6)
-                        Text(product)
-                            .font(.system(size: 14))
-                            .foregroundColor(.black)
+                // Nutrition info with better layout
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Nutrition")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(Color.theme.textSecondary)
+                        .textCase(.uppercase)
+                        .tracking(0.5)
+                    
+                    HStack(spacing: 10) {
+                        NutritionBadge(label: "Calories", value: String(format: "%.0f", dish.energy_kcal), unit: "kcal")
+                        NutritionBadge(label: "Protein", value: String(format: "%.0f", dish.proteins_g), unit: "g")
+                        NutritionBadge(label: "Fat", value: String(format: "%.0f", dish.fats_g), unit: "g")
+                        NutritionBadge(label: "Carbs", value: String(format: "%.0f", dish.carbs_g), unit: "g")
                     }
                 }
-            }
-            
-            Divider()
-            
-            // Recipe
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Recipe")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
                 
-                Text(dish.recipe)
-                    .font(.system(size: 14))
-                    .foregroundColor(.black)
-                    .lineSpacing(5)
+                Divider()
+                    .padding(.vertical, 4)
+                
+                // Ingredients with better visual hierarchy
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: "cart.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(Color.theme.primary)
+                        Text("Ingredients")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(Color.theme.primary)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(dish.products, id: \.self) { product in
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color.theme.primary.opacity(0.6))
+                                    .padding(.top, 2)
+                                Text(product)
+                                    .font(.system(size: 15))
+                                    .foregroundColor(Color.theme.textPrimary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                    .padding(.leading, 4)
+                }
+                
+                Divider()
+                    .padding(.vertical, 4)
+                
+                // Recipe with step formatting
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: "book.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(Color.theme.primary)
+                        Text("Instructions")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(Color.theme.primary)
+                    }
+                    
+                    Text(dish.recipe)
+                        .font(.system(size: 15))
+                        .foregroundColor(Color.theme.textPrimary)
+                        .lineSpacing(6)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.leading, 4)
+                }
             }
+            .padding(20)
         }
-        .padding(20)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .background(Color.theme.cardBackground)
+        .cornerRadius(20)
+        .shadow(color: Color.theme.shadowMedium, radius: 12, x: 0, y: 6)
         .onAppear {
             loadDishImage()
         }
     }
     
     private func handleToggleFavourite() {
+        favouritesManager.toggleFavourite(dish)
+    }
+    
+    private func handleToggleFavouriteWithHaptic() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
         favouritesManager.toggleFavourite(dish)
     }
     
@@ -149,22 +187,49 @@ struct DishCardView: View {
     }
 }
 
+// Info pill for time and difficulty
+struct InfoPill: View {
+    let icon: String
+    let text: String
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .semibold))
+            Text(text)
+                .font(.system(size: 13, weight: .medium))
+        }
+        .foregroundColor(Color.theme.primary)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.theme.primaryLight)
+        .cornerRadius(20)
+    }
+}
+
+// Enhanced nutrition badge
 struct NutritionBadge: View {
     let label: String
     let value: String
+    let unit: String
     
     var body: some View {
-        VStack(spacing: 5) {
-            Text(value)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
+        VStack(spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color.theme.primary)
+                Text(unit)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(Color.theme.textSecondary)
+            }
             Text(label)
-                .font(.system(size: 12))
-                .foregroundColor(.gray)
+                .font(.system(size: 11))
+                .foregroundColor(Color.theme.textSecondary)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(Color(red: 0.2, green: 0.6, blue: 0.3).opacity(0.1))
-        .cornerRadius(8)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(Color.theme.primaryLight)
+        .cornerRadius(10)
     }
 }

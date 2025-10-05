@@ -10,21 +10,21 @@ struct FavouritesView: View {
     
     var body: some View {
         ZStack {
-            Color.white.ignoresSafeArea()
+            Color.theme.background.ignoresSafeArea()
             
             if favouritesManager.favourites.isEmpty {
                 VStack(spacing: 20) {
                     Image(systemName: "heart.slash")
                         .font(.system(size: 80))
-                        .foregroundColor(Color.gray.opacity(0.5))
+                        .foregroundColor(Color.theme.textTertiary)
                     
                     Text("No Favourites Yet")
                         .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color.theme.textSecondary)
                     
                     Text("Save your favorite recipes to see them here")
                         .font(.system(size: 16))
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color.theme.textSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -34,7 +34,7 @@ struct FavouritesView: View {
                         // Header
                         Text("My Favourites")
                             .font(.system(size: 32, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
+                            .foregroundColor(Color.theme.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 20)
                             .padding(.top, 20)

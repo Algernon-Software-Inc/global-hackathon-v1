@@ -26,19 +26,19 @@ struct TabNavigationView: View {
             // Custom bottom navigation bar
             HStack(spacing: 0) {
                 TabBarItem(
-                    icon: "house.fill",
-                    label: "Home",
-                    isSelected: selectedTab == 0
-                ) {
-                    selectedTab = 0
-                }
-                
-                TabBarItem(
                     icon: "heart.fill",
                     label: "Favourites",
                     isSelected: selectedTab == 1
                 ) {
-                    selectedTab = 1
+                    handleTabSelection(1)
+                }
+                
+                TabBarItem(
+                    icon: "house.fill",
+                    label: "Home",
+                    isSelected: selectedTab == 0
+                ) {
+                    handleTabSelection(0)
                 }
                 
                 TabBarItem(
@@ -46,20 +46,25 @@ struct TabNavigationView: View {
                     label: "Settings",
                     isSelected: selectedTab == 2
                 ) {
-                    selectedTab = 2
+                    handleTabSelection(2)
                 }
             }
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: -5)
+                    .fill(Color.theme.cardBackground)
+                    .shadow(color: Color.theme.shadowMedium, radius: 10, x: 0, y: -5)
             )
             .padding(.horizontal, 20)
-            .padding(.bottom, safeBottomInset() + 2)
-            .offset(y: 20)
+            .padding(.bottom, safeBottomInset())
         }
         .ignoresSafeArea(.keyboard)
+    }
+    
+    private func handleTabSelection(_ tab: Int) {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+        selectedTab = tab
     }
 }
 
@@ -74,14 +79,16 @@ struct TabBarItem: View {
             VStack(spacing: 5) {
                 Image(systemName: icon)
                     .font(.system(size: 24))
-                    .foregroundColor(isSelected ? Color(red: 0.2, green: 0.6, blue: 0.3) : .gray)
+                    .foregroundColor(isSelected ? Color.theme.primary : Color.theme.textSecondary)
                 
                 Text(label)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(isSelected ? Color(red: 0.2, green: 0.6, blue: 0.3) : .gray)
+                    .foregroundColor(isSelected ? Color.theme.primary : Color.theme.textSecondary)
             }
             .frame(maxWidth: .infinity)
         }
+        .accessibilityLabel("\(label) tab")
+        .accessibilityHint(isSelected ? "Currently selected" : "Double tap to switch to \(label)")
     }
 }
 

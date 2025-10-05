@@ -7,6 +7,7 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedImage: UIImage?
+    @State private var lastUsedImage: UIImage?
     @State private var showImagePicker = false
     @State private var showCamera = false
     @State private var showSourceSheet = false
@@ -21,7 +22,7 @@ struct MainView: View {
         ZStack(alignment: .bottom) {
             // Background
             LinearGradient(
-                colors: [Color.white, Color.white]
+                colors: [Color.theme.background, Color.theme.background]
             , startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
             
@@ -31,10 +32,10 @@ struct MainView: View {
                     VStack(spacing: 6) {
                         Text("Cooking AI")
                             .font(.system(size: 34, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
+                            .foregroundColor(Color.theme.primary)
                         Text("Point. Shoot. Cook.")
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(Color.theme.textSecondary)
                     }
                     .padding(.top, 28)
 
@@ -50,6 +51,24 @@ struct MainView: View {
                             .padding(.horizontal, 20)
                     }
 
+                    // Loading state
+                    if isLoading {
+                        VStack(spacing: 20) {
+                            LoadingSpinnerView()
+                            
+                            VStack(spacing: 8) {
+                                Text("Analyzing ingredients…")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(Color.theme.textPrimary)
+                                Text("Finding the perfect recipes for you")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color.theme.textSecondary)
+                            }
+                        }
+                        .padding(.top, 60)
+                        .padding(.horizontal, 40)
+                    }
+                    
                     // Results
                     if !dishes.isEmpty {
                         VStack(spacing: 16) {
@@ -59,48 +78,96 @@ struct MainView: View {
                             }
                             .padding(.bottom, 50)
                         }
-                    } else {
-                        EmptyView()
-                            .padding(.top, 30)
+                    }
+                    
+                    // Empty state with guidance and integrated button
+                    if !isLoading && dishes.isEmpty {
+                        VStack(spacing: 32) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.system(size: 70, weight: .light))
+                                .foregroundColor(Color.theme.primary.opacity(0.6))
+                            
+                            VStack(spacing: 8) {
+                                Text("Ready to Cook?")
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(Color.theme.textPrimary)
+                                
+                                Text("Capture your ingredients and\nwe'll suggest delicious recipes")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(Color.theme.textSecondary)
+                                    .multilineTextAlignment(.center)
+                                    .lineSpacing(4)
+                            }
+                            
+                            // Integrated capture button
+                            Button(action: handleOpenSourceSheetWithHaptic) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 20, weight: .semibold))
+                                    Text("Capture Ingredients")
+                                        .font(.system(size: 18, weight: .semibold))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 32)
+                                .padding(.vertical, 16)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.theme.primary)
+                                        .shadow(color: Color.theme.shadowMedium, radius: 8, x: 0, y: 4)
+                                )
+                            }
+                            .accessibilityLabel("Capture ingredients")
+                            .accessibilityHint("Double tap to take a photo or choose from library")
+                        }
+                        .padding(.top, 60)
+                        .padding(.horizontal, 40)
                     }
                 }
                 .padding(.bottom, 150)
             }
         }
-        .overlay(alignment: .center) {
-            if dishes.isEmpty {
-                GeometryReader { proxy in
-                    Button(action: handleOpenSourceSheet) {
+        .overlay(alignment: .bottom) {
+            if !dishes.isEmpty {
+                ZStack {
+                    // Main capture button (centered)
+                    Button(action: handleOpenSourceSheetWithHaptic) {
                         ZStack {
                             Circle()
-                                .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
-                                .frame(width: proxy.size.width * 0.7, height: proxy.size.width * 0.7)
-                                .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 8)
+                                .fill(Color.theme.primary)
+                                .frame(width: 84, height: 84)
+                                .shadow(color: Color.theme.shadowMedium, radius: 12, x: 0, y: 8)
                             Image(systemName: "camera.fill")
-                                .font(.system(size: proxy.size.width * 0.18, weight: .semibold))
+                                .font(.system(size: 26, weight: .semibold))
                                 .foregroundColor(.white)
                         }
                     }
-                    .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
                     .accessibilityLabel("Capture ingredients")
-                }
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if !dishes.isEmpty {
-                Button(action: handleOpenSourceSheet) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
-                            .frame(width: 84, height: 84)
-                            .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 8)
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 26, weight: .semibold))
-                            .foregroundColor(.white)
+                    .accessibilityHint("Double tap to take a photo or choose from library")
+                    
+                    // Regenerate button (positioned to the right of center)
+                    HStack {
+                        Spacer()
+                        Button(action: handleRegenerateWithHaptic) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.theme.cardBackground)
+                                    .frame(width: 60, height: 60)
+                                    .shadow(color: Color.theme.shadowMedium, radius: 8, x: 0, y: 4)
+                                Circle()
+                                    .stroke(Color.theme.primary, lineWidth: 2)
+                                    .frame(width: 60, height: 60)
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(Color.theme.primary)
+                            }
+                        }
+                        .offset(x: -58)
+                        .accessibilityLabel("Regenerate recipes")
+                        .accessibilityHint("Double tap to regenerate recipes with the same ingredients")
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.bottom, safeBottomInset() + 88)
-                .accessibilityLabel("Capture ingredients")
             }
         }
         .sheet(isPresented: $showImagePicker) {
@@ -123,44 +190,50 @@ struct MainView: View {
             guard newImage != nil else { return }
             handleGetRecipes()
         }
-        .overlay(alignment: .center) {
-            if isLoading {
-                ZStack {
-                    Color.black.opacity(0.35).ignoresSafeArea()
-                    
-                    VStack(spacing: 14) {
-                        if let preview = selectedImage {
-                            Image(uiImage: preview)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 220)
-                                .clipped()
-                                .cornerRadius(14)
-                                .accessibilityLabel("Selected ingredients image")
-                        }
-                        
-                        LoadingSpinnerView()
-                        Text("Analyzing ingredients…")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.primary)
-                        Text("This may take a few seconds")
-                            .font(.system(size: 13))
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: 340)
-                    .padding(18)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(18)
-                    .shadow(color: Color.black.opacity(0.25), radius: 18, x: 0, y: 10)
-                }
-                .transition(.opacity)
-            }
-        }
     }
     
     private func handleOpenSourceSheet() {
         showSourceSheet = true
+    }
+    
+    private func handleOpenSourceSheetWithHaptic() {
+        let impact = UIImpactFeedbackGenerator(style: .medium)
+        impact.impactOccurred()
+        showSourceSheet = true
+    }
+    
+    private func handleRegenerateWithHaptic() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+        
+        // Regenerate recipes by resending the last API request
+        guard let lastImage = lastUsedImage else {
+            errorMessage = "No previous image to regenerate from"
+            showError = true
+            return
+        }
+        
+        isLoading = true
+        
+        Task {
+            do {
+                let fetchedDishes = try await APIService.shared.getDishes(
+                    image: lastImage,
+                    preferences: preferencesManager.preferences
+                )
+                
+                await MainActor.run {
+                    dishes = fetchedDishes
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    isLoading = false
+                    errorMessage = "Failed to regenerate recipes. Please try again."
+                    showError = true
+                }
+            }
+        }
     }
 
     private func handleTakePhoto() {
@@ -173,6 +246,9 @@ struct MainView: View {
     
     private func handleGetRecipes() {
         guard let image = selectedImage else { return }
+        
+        // Store the image for regeneration
+        lastUsedImage = image
         
         isLoading = true
         

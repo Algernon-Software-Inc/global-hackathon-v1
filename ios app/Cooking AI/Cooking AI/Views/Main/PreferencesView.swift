@@ -11,14 +11,14 @@ struct PreferencesView: View {
     
     var body: some View {
         ZStack {
-            Color.white.ignoresSafeArea()
+            Color.theme.background.ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 25) {
                     // Header
                     Text("Preferences")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
+                        .foregroundColor(Color.theme.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
@@ -48,17 +48,19 @@ struct PreferencesView: View {
                     )
                     
                     // Edit button
-                    Button(action: handleEditPreferences) {
+                    Button(action: handleEditPreferencesWithHaptic) {
                         Text("Edit Preferences")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color(red: 0.2, green: 0.6, blue: 0.3))
+                            .background(Color.theme.primary)
                             .cornerRadius(12)
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 10)
+                    .accessibilityLabel("Edit preferences")
+                    .accessibilityHint("Double tap to modify your cooking preferences")
                 }
                 .padding(.bottom, 100)
             }
@@ -71,6 +73,12 @@ struct PreferencesView: View {
     private func handleEditPreferences() {
         showOnboarding = true
     }
+    
+    private func handleEditPreferencesWithHaptic() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+        showOnboarding = true
+    }
 }
 
 struct PreferenceSection: View {
@@ -81,31 +89,31 @@ struct PreferenceSection: View {
         VStack(alignment: .leading, spacing: 15) {
             Text(title)
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3))
+                .foregroundColor(Color.theme.primary)
             
             if items.isEmpty || (items.count == 1 && items[0].isEmpty) {
                 Text("Not set")
                     .font(.system(size: 14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color.theme.textSecondary)
                     .italic()
             } else {
                 ForEach(items, id: \.self) { item in
                     HStack(spacing: 10) {
                         Circle()
-                            .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
+                            .fill(Color.theme.primary)
                             .frame(width: 8, height: 8)
                         Text(item)
                             .font(.system(size: 16))
-                            .foregroundColor(.black)
+                            .foregroundColor(Color.theme.textPrimary)
                     }
                 }
             }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
+        .background(Color.theme.cardBackground)
         .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .shadow(color: Color.theme.shadowLight, radius: 5, x: 0, y: 2)
         .padding(.horizontal, 20)
     }
 }
