@@ -103,19 +103,61 @@ struct DishCardView: View {
                         Text("Ingredients")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(Color.theme.primary)
+                        
+                        Spacer()
+                        
+                        // Summary badge
+                        HStack(spacing: 4) {
+                            Text("\(dish.existingProducts.count)/\(dish.products.count)")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(Color.theme.primary)
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(Color.theme.primary)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.theme.primaryLight)
+                        .cornerRadius(12)
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(dish.products, id: \.self) { product in
                             HStack(alignment: .top, spacing: 10) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color.theme.primary.opacity(0.6))
-                                    .padding(.top, 2)
+                                // Show different icon based on availability
+                                if dish.hasProduct(product) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color.theme.success)
+                                        .padding(.top, 2)
+                                } else {
+                                    Image(systemName: "circle")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color.theme.textTertiary)
+                                        .padding(.top, 2)
+                                }
+                                
                                 Text(product)
                                     .font(.system(size: 15))
-                                    .foregroundColor(Color.theme.textPrimary)
+                                    .foregroundColor(dish.hasProduct(product) ? Color.theme.textPrimary : Color.theme.textSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
+                                
+                                Spacer()
+                                
+                                // Show "You have" or "Need" badge
+                                if dish.hasProduct(product) {
+                                    Text("✓")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundColor(Color.theme.success)
+                                } else {
+                                    Text("Need")
+                                        .font(.system(size: 11, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.theme.warning)
+                                        .cornerRadius(4)
+                                }
                             }
                         }
                     }

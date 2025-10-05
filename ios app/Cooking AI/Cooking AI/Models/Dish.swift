@@ -9,6 +9,7 @@ struct Dish: Codable, Identifiable {
     let id = UUID()
     let name: String
     let products: [String]
+    let products_exist: [String]
     let recipe: String
     let time_min: Int
     let difficulty: Int
@@ -19,11 +20,11 @@ struct Dish: Codable, Identifiable {
     let image_id: String?
 
     enum CodingKeys: String, CodingKey {
-        case name, products, recipe, time_min, difficulty
+        case name, products, products_exist, recipe, time_min, difficulty
         case energy_kcal, proteins_g, fats_g, carbs_g, image_id
         case time, timeMin, difficulty_level, kcal, energy
         case protein, proteins, fat, carbs
-        case imageId
+        case imageId, productsExist
     }
 
     // Lenient decoding to handle partial/mismatched server payloads
@@ -31,6 +32,7 @@ struct Dish: Codable, Identifiable {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         self.name = (try? c.decode(String.self, forKey: .name)) ?? "Dish"
         self.products = (try? c.decode([String].self, forKey: .products)) ?? []
+        self.products_exist = (try? c.decode([String].self, forKey: .products_exist)) ?? (try? c.decode([String].self, forKey: .productsExist)) ?? []
         self.recipe = (try? c.decode(String.self, forKey: .recipe)) ?? ""
 
         func decodeInt(_ keys: [CodingKeys], default def: Int) -> Int {
@@ -90,12 +92,28 @@ struct Dish: Codable, Identifiable {
             return "30 min" // Default fallback
         }
     }
+    
+    // Check if a product exists in user's ingredients
+    func hasProduct(_ product: String) -> Bool {
+        return products_exist.contains(product)
+    }
+    
+    // Get missing products
+    var missingProducts: [String] {
+        return products.filter { !products_exist.contains($0) }
+    }
+    
+    // Get existing products
+    var existingProducts: [String] {
+        return products.filter { products_exist.contains($0) }
+    }
 
     // Encodable conformance (canonical keys)
     func encode(to encoder: Encoder) throws {
         var c = encoder.container(keyedBy: CodingKeys.self)
         try c.encode(name, forKey: .name)
         try c.encode(products, forKey: .products)
+        try c.encode(products_exist, forKey: .products_exist)
         try c.encode(recipe, forKey: .recipe)
         try c.encode(time_min, forKey: .time_min)
         try c.encode(difficulty, forKey: .difficulty)

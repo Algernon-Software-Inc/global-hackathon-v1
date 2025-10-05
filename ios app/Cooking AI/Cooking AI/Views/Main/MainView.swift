@@ -15,6 +15,7 @@ struct MainView: View {
     @State private var isLoading = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var isRegenerating = false
     
     @ObservedObject var preferencesManager = PreferencesManager.shared
     
@@ -187,7 +188,7 @@ struct MainView: View {
             Text(errorMessage)
         }
         .onChange(of: selectedImage) { newImage in
-            guard newImage != nil else { return }
+            guard newImage != nil, !isRegenerating, !isLoading else { return }
             handleGetRecipes()
         }
     }
@@ -206,6 +207,9 @@ struct MainView: View {
         let impact = UIImpactFeedbackGenerator(style: .light)
         impact.impactOccurred()
         
+        // Avoid duplicate requests while loading/regenerating
+        if isLoading { return }
+        
         // Regenerate recipes by resending the last API request
         guard let lastImage = lastUsedImage else {
             errorMessage = "No previous image to regenerate from"
@@ -213,6 +217,10 @@ struct MainView: View {
             return
         }
         
+        // Clear dishes and show the image with loading state
+        isRegenerating = true
+        dishes = []
+        selectedImage = lastImage
         isLoading = true
         
         Task {
@@ -225,10 +233,15 @@ struct MainView: View {
                 await MainActor.run {
                     dishes = fetchedDishes
                     isLoading = false
+                    isRegenerating = false
+                    // Remove preview image after successful fetch
+                    selectedImage = nil
                 }
             } catch {
                 await MainActor.run {
                     isLoading = false
+                    isRegenerating = false
+                    selectedImage = nil
                     errorMessage = "Failed to regenerate recipes. Please try again."
                     showError = true
                 }
