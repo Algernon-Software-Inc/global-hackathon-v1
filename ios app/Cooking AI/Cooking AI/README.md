@@ -170,3 +170,4 @@ Add these keys to your `Info.plist`:
 ## License
 
 Copyright © 2025 Algernon Software Inc. All rights reserved.
+

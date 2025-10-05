@@ -28,3 +28,4 @@ struct OnboardingContainerView: View {
         .animation(.easeInOut, value: currentPage)
     }
 }
+

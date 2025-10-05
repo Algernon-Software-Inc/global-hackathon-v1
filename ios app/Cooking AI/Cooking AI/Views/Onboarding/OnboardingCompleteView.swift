@@ -80,3 +80,4 @@ struct OnboardingCompleteView: View {
         preferencesManager.completeOnboarding()
     }
 }
+

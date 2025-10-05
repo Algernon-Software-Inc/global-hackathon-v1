@@ -233,3 +233,4 @@ Before submitting to App Store:
 The app is fully functional and ready for API integration. Once you connect your API endpoint, users can start getting recipe suggestions!
 
 **Need Help?** Check the documentation files or review the inline code comments.
+

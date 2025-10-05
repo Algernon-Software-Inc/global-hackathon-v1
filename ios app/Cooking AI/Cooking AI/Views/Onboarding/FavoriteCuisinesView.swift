@@ -91,3 +91,4 @@ struct FavoriteCuisinesView: View {
         currentPage = 3
     }
 }
+

@@ -68,3 +68,4 @@ enum MealPrepTime: String, CaseIterable {
     case long = "1-2 hours"
     case veryLong = "2+ hours"
 }
+

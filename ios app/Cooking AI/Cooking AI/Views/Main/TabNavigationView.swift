@@ -56,7 +56,8 @@ struct TabNavigationView: View {
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: -5)
             )
             .padding(.horizontal, 20)
-            .padding(.bottom, safeBottomInset() + 6)
+            .padding(.bottom, safeBottomInset() + 2)
+            .offset(y: 20)
         }
         .ignoresSafeArea(.keyboard)
     }

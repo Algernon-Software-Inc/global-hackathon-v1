@@ -72,3 +72,4 @@ struct DietaryRestrictionsView: View {
         currentPage = 1
     }
 }
+

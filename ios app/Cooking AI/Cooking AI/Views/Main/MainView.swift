@@ -57,37 +57,51 @@ struct MainView: View {
                                 DishCardView(dish: dish)
                                     .padding(.horizontal, 20)
                             }
-                            .padding(.bottom, 100)
+                            .padding(.bottom, 50)
                         }
                     } else {
-                        VStack(spacing: 14) {
-                            Image(systemName: "leaf.circle")
-                                .font(.system(size: 50, weight: .regular))
-                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.3).opacity(0.9))
-                            Text("Snap your ingredients to get recipes")
-                                .font(.system(size: 16))
-                                .foregroundColor(.gray)
-                        }
-                        .padding(.top, 30)
+                        EmptyView()
+                            .padding(.top, 30)
                     }
                 }
                 .padding(.bottom, 150)
             }
-
-            // Single primary capture button (centered)
-            Button(action: handleOpenSourceSheet) {
-                ZStack {
-                    Circle()
-                        .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
-                        .frame(width: 96, height: 96)
-                        .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 8)
-                    Image(systemName: "camera.fill")
-                        .font(.system(size: 32, weight: .semibold))
-                        .foregroundColor(.white)
+        }
+        .overlay(alignment: .center) {
+            if dishes.isEmpty {
+                GeometryReader { proxy in
+                    Button(action: handleOpenSourceSheet) {
+                        ZStack {
+                            Circle()
+                                .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
+                                .frame(width: proxy.size.width * 0.7, height: proxy.size.width * 0.7)
+                                .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 8)
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: proxy.size.width * 0.18, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+                    .accessibilityLabel("Capture ingredients")
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, safeBottomInset() + 96)
+        }
+        .overlay(alignment: .bottom) {
+            if !dishes.isEmpty {
+                Button(action: handleOpenSourceSheet) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(red: 0.2, green: 0.6, blue: 0.3))
+                            .frame(width: 84, height: 84)
+                            .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 8)
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 26, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .padding(.bottom, safeBottomInset() + 88)
+                .accessibilityLabel("Capture ingredients")
+            }
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(image: $selectedImage, sourceType: .photoLibrary)
@@ -170,9 +184,8 @@ struct MainView: View {
                 )
                 
                 await MainActor.run {
-                    // Deduplicate by name and show top 1 dish
-                    let unique = Array(Dictionary(grouping: fetchedDishes, by: { $0.name }).values.compactMap { $0.first })
-                    dishes = unique.prefix(1).map { $0 }
+                    // Show all dishes returned by the API in original order
+                    dishes = fetchedDishes
                     isLoading = false
                     // Remove preview image after successful fetch
                     selectedImage = nil

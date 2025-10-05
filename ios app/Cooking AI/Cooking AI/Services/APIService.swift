@@ -41,7 +41,7 @@ class APIService {
                 guard (200...299).contains(httpResponse.statusCode) else {
                     #if DEBUG
                     let s = String(data: data, encoding: .utf8) ?? "<non-utf8>"
-                    print("[API] ❌ HTTP error variant=\(label.rawValue) status=\(httpResponse.statusCode) bytes=\(data.count) body=\(s.prefix(1000))")
+                    print("[API] ❌ HTTP error variant=\(label.rawValue) status=\(httpResponse.statusCode) bytes=\(data.count) body=\(s)")
                     #endif
                     lastError = APIError.server(status: httpResponse.statusCode, body: String((String(data: data, encoding: .utf8) ?? "").prefix(500)))
                     continue
@@ -50,13 +50,13 @@ class APIService {
                     let dishes = try decodeDishes(data)
                     #if DEBUG
                     let raw = String(data: data, encoding: .utf8) ?? "<non-utf8>"
-                    print("[API] ✅ Success variant=\(label.rawValue) status=\(httpResponse.statusCode) bytes=\(data.count) count=\(dishes.count) at=\(Date()) raw=\(raw.prefix(1000))")
+                    print("[API] ✅ Success variant=\(label.rawValue) status=\(httpResponse.statusCode) bytes=\(data.count) count=\(dishes.count) at=\(Date()) raw=\(raw)")
                     #endif
                     return dishes
                 } catch {
                     #if DEBUG
                     let s = String(data: data, encoding: .utf8) ?? "<non-utf8>"
-                    print("[API] ⚠️ Decode failed variant=\(label.rawValue) error=\(error) bytes=\(data.count) body=\(s.prefix(1000))")
+                    print("[API] ⚠️ Decode failed variant=\(label.rawValue) error=\(error) bytes=\(data.count) body=\(s)")
                     #endif
                     lastError = APIError.decodingError
                     continue
@@ -157,7 +157,7 @@ class APIService {
     
     func getImage(imageId: String) async throws -> UIImage {
         // Django often requires trailing slash; add it here
-        guard let url = URL(string: "\(baseURL)/api/images/\(imageId)/") else {
+        guard let url = URL(string: "\(baseURL)/api/images/\(imageId).png") else {
             throw APIError.invalidURL
         }
         var request = URLRequest(url: url)
@@ -176,7 +176,7 @@ class APIService {
               (200...299).contains(httpResponse.statusCode) else {
             #if DEBUG
             let s = String(data: data, encoding: .utf8) ?? "<non-utf8> or binary>"
-            print("[API] ❌ Image fetch failed id=\(imageId) status=\((response as? HTTPURLResponse)?.statusCode ?? -1) body=\(s.prefix(500))")
+            print("[API] ❌ Image fetch failed id=\(imageId) status=\((response as? HTTPURLResponse)?.statusCode ?? -1) body=\(s)")
             #endif
             throw APIError.invalidResponse
         }

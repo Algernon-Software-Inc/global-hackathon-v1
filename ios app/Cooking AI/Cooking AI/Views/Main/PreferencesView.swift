@@ -109,3 +109,4 @@ struct PreferenceSection: View {
         .padding(.horizontal, 20)
     }
 }
+

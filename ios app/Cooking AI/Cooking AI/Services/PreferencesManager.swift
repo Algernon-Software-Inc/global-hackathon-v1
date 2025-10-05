@@ -42,3 +42,4 @@ class PreferencesManager: ObservableObject {
         UserDefaults.standard.set(false, forKey: onboardingKey)
     }
 }
+
