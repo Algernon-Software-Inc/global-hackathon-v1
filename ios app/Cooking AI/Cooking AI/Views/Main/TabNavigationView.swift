@@ -6,16 +6,16 @@
 import SwiftUI
 
 struct TabNavigationView: View {
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1 // Start with Main (center)
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Main content
+            // Main content - Order: Favourites, Main, Settings
             TabView(selection: $selectedTab) {
-                MainView()
+                FavouritesView()
                     .tag(0)
                 
-                FavouritesView()
+                MainView()
                     .tag(1)
                 
                 PreferencesView()
@@ -28,17 +28,17 @@ struct TabNavigationView: View {
                 TabBarItem(
                     icon: "heart.fill",
                     label: "Favourites",
-                    isSelected: selectedTab == 1
+                    isSelected: selectedTab == 0
                 ) {
-                    handleTabSelection(1)
+                    handleTabSelection(0)
                 }
                 
                 TabBarItem(
                     icon: "house.fill",
                     label: "Home",
-                    isSelected: selectedTab == 0
+                    isSelected: selectedTab == 1
                 ) {
-                    handleTabSelection(0)
+                    handleTabSelection(1)
                 }
                 
                 TabBarItem(
