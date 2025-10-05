@@ -28,12 +28,12 @@ python manage.py migrate
 
 # 4) run (no nginx)
 python manage.py runserver 0.0.0.0:<PORT>
+```
 
 ### iOS App (super short)
 
 1. Open the Xcode project.
 2. Set backend base URL:
-
    ```swift
    let BASE = URL(string: "http://<SERVER_IP>:<PORT>")!
    ```
