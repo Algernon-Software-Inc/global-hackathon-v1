@@ -62,8 +62,8 @@ struct DishCardView: View {
             }
             
             VStack(alignment: .leading, spacing: 16) {
-                // Dish name
-                Text(dish.name)
+            // Dish name
+            Text(dish.name)
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(Color.theme.primary)
                     .lineLimit(2)
@@ -84,14 +84,14 @@ struct DishCardView: View {
                         .tracking(0.5)
                     
                     HStack(spacing: 10) {
-                        NutritionBadge(label: "Calories", value: String(format: "%.0f", dish.energy_kcal), unit: "kcal")
+                        NutritionBadge(label: "Calories", value: String(format: "%.0f", dish.displayKcal), unit: "kcal")
                         NutritionBadge(label: "Protein", value: String(format: "%.0f", dish.proteins_g), unit: "g")
                         NutritionBadge(label: "Fat", value: String(format: "%.0f", dish.fats_g), unit: "g")
                         NutritionBadge(label: "Carbs", value: String(format: "%.0f", dish.carbs_g), unit: "g")
                     }
-                }
-                
-                Divider()
+            }
+            
+            Divider()
                     .padding(.vertical, 4)
                 
                 // Ingredients with better visual hierarchy
@@ -122,7 +122,7 @@ struct DishCardView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        ForEach(dish.products, id: \.self) { product in
+                ForEach(dish.products, id: \.self) { product in
                             HStack(alignment: .top, spacing: 10) {
                                 // Show different icon based on availability
                                 if dish.hasProduct(product) {
@@ -137,7 +137,7 @@ struct DishCardView: View {
                                         .padding(.top, 2)
                                 }
                                 
-                                Text(product)
+                        Text(product)
                                     .font(.system(size: 15))
                                     .foregroundColor(dish.hasProduct(product) ? Color.theme.textPrimary : Color.theme.textSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -162,9 +162,9 @@ struct DishCardView: View {
                         }
                     }
                     .padding(.leading, 4)
-                }
-                
-                Divider()
+            }
+            
+            Divider()
                     .padding(.vertical, 4)
                 
                 // Recipe with step formatting
@@ -177,8 +177,8 @@ struct DishCardView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(Color.theme.primary)
                     }
-                    
-                    Text(dish.recipe)
+                
+                Text(dish.recipe)
                         .font(.system(size: 15))
                         .foregroundColor(Color.theme.textPrimary)
                         .lineSpacing(6)
@@ -258,7 +258,7 @@ struct NutritionBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text(value)
+            Text(value)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(Color.theme.primary)
                 Text(unit)
