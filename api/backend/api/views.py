@@ -39,10 +39,7 @@ def parse_recipes(recipes_text: str):
 
         name = lines[0].strip()
         products_line = lines[1].strip()
-        products_line = lines[-1].strip()
         products = [p.strip() for p in products_line.split(",") if p.strip()]
-        products_exist = [p.strip() for p in products_line.split(",") if p.strip()]
-        print(products_exist)
 
         tail = lines[-6:]
         recipe_body_lines = lines[2:-6]
@@ -62,6 +59,10 @@ def parse_recipes(recipes_text: str):
         proteins_g = to_num(tail[3], as_int=False)
         fats_g = to_num(tail[4], as_int=False)
         carbs_g = to_num(tail[5], as_int=False)
+
+        products_line = lines[-1].strip()
+        products_exist = [p.strip() for p in products_line.split(",") if p.strip()]
+        print(products_exist)
 
         results.append({
             "name": name,
