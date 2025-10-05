@@ -144,9 +144,8 @@ struct MainView: View {
                     .accessibilityLabel("Capture ingredients")
                     .accessibilityHint("Double tap to take a photo or choose from library")
                     
-                    // Regenerate button (positioned to the right of center)
+                    // Regenerate button (positioned to the left of center)
                     HStack {
-                        Spacer()
                         Button(action: handleRegenerateWithHaptic) {
                             ZStack {
                                 Circle()
@@ -161,9 +160,10 @@ struct MainView: View {
                                     .foregroundColor(Color.theme.primary)
                             }
                         }
-                        .offset(x: -58)
+                        .offset(x: 58)
                         .accessibilityLabel("Regenerate recipes")
                         .accessibilityHint("Double tap to regenerate recipes with the same ingredients")
+                        Spacer()
                     }
                 }
                 .frame(maxWidth: .infinity)
